@@ -8,7 +8,6 @@ dateRouter.get('/', async (request, response) => {
 
 dateRouter.get('/:name', async (request, response) => {
   const dates = await Date.find({dateName: request.params.name})
-  console.log(request.params.name + " test")
   response.json(dates.map(product => product.toJSON()))
 })
 
