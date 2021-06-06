@@ -4,6 +4,7 @@ const cors = require('cors')
 const mongoose = require('mongoose')
 const config = require('./utils/config')
 const datesRouter = require('./controllers/dates')
+const metaRouter = require('./controllers/meta')
 const middleware = require('./utils/middleware')
 
 app.use(cors())
@@ -19,8 +20,8 @@ mongoose.connect(mongoUrl, { useNewUrlParser: true, useUnifiedTopology: true })
     console.log('error connecting to MongoDB:', error.message)
   })
 
-
 app.use('/dates', datesRouter)
+app.use('/meta', metaRouter)
 
 app.use(middleware.errorHandler)
 
