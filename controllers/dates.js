@@ -18,9 +18,11 @@ dateRouter.get('/archive/:date', async (request, response) => {
   }
 
   const extractDate = (date, translatedDate) => {
+    const matchedDate = date.dateArray.find(element => element.archivedDateTime ? (getBeginningOfDay(element.archivedDateTime) == translatedDate) : false)
+
     return {
       dateName: date.dateName,
-      dateValue: date.dateArray.find(element => getBeginningOfDay(element.archivedDateTime) == translatedDate).archivedDateValue
+      dateValue: matchedDate ? matchedDate.archivedDateValue : "No data found!"
     }
   }
 
