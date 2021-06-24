@@ -1,7 +1,9 @@
 const dateRouter = require('express').Router()
 const DateSchema = require('../models/date')
+const dateUpdateScript = require('../utils/dateUpdateScript')
+const config = require('../utils/config')
 
-dateRouter.get('/', async (request, response) => {
+dateRouter.get('/', async (request, response) => {  
   const dates = await DateSchema.find({})
   response.json(dates.map(date => date.toJSON()))
 })
@@ -34,6 +36,23 @@ dateRouter.get('/archive/:date', async (request, response) => {
   const result = dates.map(date => extractDate(date, translatedDate))
   console.log(result)
   response.json(result)
+})
+
+dateRouter.put('/update', async (request, response, next) => {
+  const token = request.body.updateKey
+  if(!token) {
+    console.log("Error: update key required!")
+    return response.status(401).json({error: 'Missing token'})
+  } else if(token.localeCompare(config.SECRET) != 0) {
+    console.log("Error: invalid update key!")
+    return response.status(401).json({error: 'Token invalid'})
+  }
+
+  //Attempt a date update
+  const result = await dateUpdateScript.updateDates()
+  return response.json({
+    "Update success": result
+  })
 })
 
 module.exports = dateRouter
