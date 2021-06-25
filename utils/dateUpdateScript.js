@@ -1,10 +1,13 @@
 const DateItem = require('../models/date')
 const mongoose = require('mongoose')
-const puppeteer = require('puppeteer');
+const puppeteer = require('puppeteer-extra');
 const Meta = require('../models/meta')
 const config = require('../utils/config')
 
 const targetUrl = config.TARGET_URI
+
+const StealthPlugin = require('puppeteer-extra-plugin-stealth')
+puppeteer.use(StealthPlugin())
 
 const updateDates = async () => {
   //Check if last updated time was less than 24h ago
@@ -45,16 +48,24 @@ const updateDates = async () => {
     console.log(tds)
     console.log(bodyHTML)
 
+    if(tds.length == 0) {
+      return false
+    }
+
     for(let k = 0; k < tds.length; k += 2) {
       updateSpecificItem(tds[k], tds[k + 1])
     }
 
     await browser.close();
+    return true
   }
 
-  await attemptScraping().catch((error) => console.log('error: ' + error))  
+  const success = await attemptScraping().catch((error) => console.log('error: ' + error))  
 
-  updateDate()
+  if(success) {
+    updateDate()
+  }
+  
   return true
 }
 
