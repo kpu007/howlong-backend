@@ -23,7 +23,7 @@ const updateDates = async () => {
     return false
   }
   
-  (async () => {
+  const attemptScraping = async () => {
     const browser = await puppeteer.launch({
       headless: true,
       args: ['--no-sandbox','--disable-setuid-sandbox']
@@ -32,6 +32,7 @@ const updateDates = async () => {
   
     console.log("connecting to site")
     await page.goto(targetUrl);
+    console.log(targetUrl)
     console.log("connected to site")  
 
     let tds = await page.evaluate(() => {
@@ -44,7 +45,9 @@ const updateDates = async () => {
     }
 
     await browser.close();
-  })().catch((error) => console.log('error: ' + error))  
+  }
+
+  await attemptScraping().catch((error) => console.log('error: ' + error))  
 
   updateDate()
   return true
