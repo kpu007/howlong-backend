@@ -39,7 +39,12 @@ const updateDates = async () => {
       const tds = Array.from(document.querySelectorAll('td'))
       return tds.map(td => td.innerText)
     });
-  
+
+    //debug
+    let bodyHTML = await page.evaluate(() => document.body.innerHTML);
+    console.log(tds)
+    console.log(bodyHTML)
+
     for(let k = 0; k < tds.length; k += 2) {
       updateSpecificItem(tds[k], tds[k + 1])
     }
