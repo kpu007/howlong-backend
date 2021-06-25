@@ -38,14 +38,20 @@ dateRouter.get('/archive/:date', async (request, response) => {
   response.json(result)
 })
 
-dateRouter.put('/update', async (request, response, next) => {
-  const token = request.body.updateKey
+dateRouter.post('/update', async (request, response) => {
+  if(!request.body.updateKey) {
+    console.log("Error: update key required!")
+    return response.status(401).json({error: 'Missing password'})
+  }
+
+  const token = request.body.updateKey.password
+
   if(!token) {
     console.log("Error: update key required!")
-    return response.status(401).json({error: 'Missing token'})
+    return response.status(401).json({error: 'Missing password'})
   } else if(token.localeCompare(config.SECRET) != 0) {
     console.log("Error: invalid update key!")
-    return response.status(401).json({error: 'Token invalid'})
+    return response.status(401).json({error: 'Password invalid'})
   }
 
   //Attempt a date update
