@@ -16,13 +16,13 @@ const updateDates = async () => {
   const currentDate = new Date()
 
   const msDifference = Math.abs(lastUpdated - currentDate)
-  const msPerDay = 1000 * 60 * 60 * 24
+  const msPerDay = 1000 * 60 * 60 * 18
 
   if(msDifference < msPerDay) {
     console.log("Attempting to update too soon!")
     console.log("Last update was " + lastUpdated)
     console.log("Current time is " + currentDate)
-    console.log("Please wait 24 hours before attempting another update.")
+    console.log("Please wait 18 hours before attempting another update.")
     return false
   }
   
@@ -78,17 +78,24 @@ const updateSpecificItem = async (itemName, dateString) => {
     const item = itemToUpdateArr[0]
 
     
-    if(item.lastUpdated.valueOf() == new Date().setHours(0, 0, 0, 0).valueOf()) {
+    if (item.lastUpdated.valueOf() == new Date().setHours(0, 0, 0, 0).valueOf()) {
       console.log("Item " + itemName + " has already been updated today (" + item.lastUpdated + ")")
       return
     }
 
-    item.currentDate = dateString //mongoose casts this to date
+    //If the date is marked "complete" it's technically not moving
+    let inputString = dateString
+
+    if (dateString.localeCompare("COMPLETE") == 0) {
+      inputString = item.dateArray[0].archivedDateValue.toString()
+    }
+
+    item.currentDate = inputString //mongoose casts this to date
     const newDate = new Date().setHours(0, 0, 0, 0)
     
     const archivePair = {
       archivedDateTime: newDate,
-      archivedDateValue: dateString
+      archivedDateValue: inputString
     }
 
     item.dateArray.unshift(archivePair) //this is saved as a string, but it's converted back
